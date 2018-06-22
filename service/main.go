@@ -127,8 +127,10 @@ func handlerSearch(w http.ResponseWriter, r *http.Request) {
 		p := item.(Post) // p = (Post) item
 		fmt.Printf("Post by %s: %s at last %v and lon %v\n", p.User,
 			p.Message, p.Location.Lat, p.Location.Lon)
-		ps = append(ps, p)
 
+		if !containsFilterWords(&p.Message) {
+			ps = append(ps, p)
+		}
 	}
 
 	js, err := json.Marshal(ps)
@@ -181,4 +183,17 @@ func saveToES(p *Post, id string) {
 		return
 	}
 	fmt.Printf("Post is saved to index: %s\n", p.Message)
+}
+
+func containsFilterWords(s *string) bool {
+	filterWords := []string{
+		"fuck",
+		"pussy",
+	}
+	for _, word := range filterWords {
+		if strings.Contains(*s, word) {
+			return true
+		}
+	}
+	return false
 }
