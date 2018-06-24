@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
-	"strings"
 )
 
 type Location struct {
