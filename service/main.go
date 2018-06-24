@@ -12,18 +12,19 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 const (
 	DISTANCE = "200km"
 	TYPE     = "post"
 	INDEX    = "around"
-        // Needs to update
-        PROJECT_ID = "around-stunning-symbol-206502"
-        BT_INSTANCE = "around-post"
-        // Needs to update this URL if you deploy it to cloud.
-	ES_URL = "http://35.224.32.198:9200"
-	"strings"
+	// Needs to update
+	PROJECT_ID  = "around-stunning-symbol-206502"
+	BT_INSTANCE = "around-post"
+	// Needs to update this URL if you deploy it to cloud.
+	ES_URL      = "http://35.224.32.198:9200"
+	BUCKET_NAME = "post-images-206502-0804"
 )
 
 type Location struct {
@@ -39,14 +40,6 @@ type Post struct {
 	Location Location `json:"location"`
 	Url      string   `json: "url"`
 }
-
-const (
-	DISTANCE    = "200km"
-	TYPE        = "post"
-	INDEX       = "around"
-	ES_URL      = "http://35.224.32.198:9200"
-	BUCKET_NAME = "post-images-206502-0804"
-)
 
 func main() {
 	// Create a client
