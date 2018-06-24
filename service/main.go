@@ -213,8 +213,8 @@ func saveToGCS(ctx context.Context, r io.Reader, bucketName, name string) (*stor
 		return nil, nil, err
 	}
 
-	obj := bucket.Object(name)
-	wc := obj.NewWriter(ctx)
+	obj := bucket.Object(name) // id of the object we write
+	wc := obj.NewWriter(ctx)   // writer to write on the object
 
 	if _, err = io.Copy(wc, r); err != nil {
 		return nil, nil, err
