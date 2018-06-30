@@ -401,7 +401,7 @@ func handlerCluster(w http.ResponseWriter, r *http.Request) {
 
 	// Range query.
 	// For details, https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html
-	q := elastic.NewRangeQuery(term).Gte(0.9)
+	q := elastic.NewRangeQuery(term).Gte(0.9) // only search for doulbe/float tpye well, gte = greater than or equal
 
 	searchResult, err := client.Search().
 		Index(INDEX).
