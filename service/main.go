@@ -28,7 +28,7 @@ const (
 	TYPE     = "post"
 	INDEX    = "around"
 	// Needs to update
-	PROJECT_ID  = "around-stunning-symbol-206502"
+	PROJECT_ID  = "stunning-symbol-206502"
 	BT_INSTANCE = "around-post"
 	// Needs to update this URL if you deploy it to cloud.
 	ES_URL      = "http://35.224.32.198:9200"
