@@ -18,6 +18,9 @@ import (
 	"github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+
+	//BIg Table
+	"cloud.google.com/go/bigtable"
 )
 
 const (
@@ -141,7 +144,7 @@ func handlerSearch(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	// searchResult is of type SearchResult and returns hits, suggestion	   s,and all kinds of other information from Elasticsearch.
+	// searchResult is of type SearchResult and returns hits, suggestions,and all kinds of other information from Elasticsearch.
 	fmt.Printf("Query took %d milliseconds\n", searchResult.TookInMillis)
 	// TotalHits is another convenience function that works even
 	// somethings goes wrong
@@ -213,7 +216,8 @@ func handlerPost(w http.ResponseWriter, r *http.Request) {
 
 	defer file.Close()
 
-	ctx := context.Background() // save to GCS we need a application credentials								   // context can be used to read write the data from the GCS
+	ctx := context.Background() // save to GCS we need a application credentials
+	// context can be used to read write the data from the GCS
 
 	id := uuid.New()
 	_, attrs, err := saveToGCS(ctx, file, BUCKET_NAME, id)
@@ -228,6 +232,35 @@ func handlerPost(w http.ResponseWriter, r *http.Request) {
 
 	// Save to ES.
 	saveToES(p, id)
+
+	// Save to BigTable, just to save data to big table to use BigQuery
+	saveToBigTable(p, id)
+}
+
+func saveToBigTable(p *Post, id string) {
+	ctx := context.Background()
+	bt_client, err := bigtable.NewClient(ctx, PROJECT_ID, BT_INSTANCE)
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	// open the table
+	tbl := bt_client.Open("post")
+	mut := bigtable.NewMutation()
+	t := bigtable.Now()
+
+	mut.Set("post", "user", t, []byte(p.User)) // p.Uset got converted into byte array
+	mut.Set("post", "message", t, []byte(p.Message))
+	mut.Set("location", "lat", t, []byte(strconv.FormatFloat(p.Location.Lat, 'f', -1, 64)))
+	mut.Set("location", "lon", t, []byte(strconv.FormatFloat(p.Location.Lon, 'f', -1, 64)))
+
+	err = tbl.Apply(ctx, id, mut)
+	if err != nil {
+		panic(err)
+		return
+	}
+	fmt.Printf("Post is saved to BigTable: %s\n", p.Message)
 }
 
 func saveToGCS(ctx context.Context, r io.Reader, bucketName, name string) (*storage.ObjectHandle, *storage.ObjectAttrs, error) {
